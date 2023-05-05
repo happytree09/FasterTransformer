@@ -149,10 +149,11 @@ public:
     {
         FT_LOG_DEBUG(__PRETTY_FUNCTION__);
         pointer_mapping_ = new std::unordered_map<void*, size_t>();
-#if defined(CUDA_MEMORY_POOL_DISABLED)
-        FT_LOG_WARNING(
-            "Async cudaMalloc/Free is not supported before CUDA 11.2. Using Sync cudaMalloc/Free."
-            "Note this may lead to hang with NCCL kernels launched in parallel; if so, try NCCL_LAUNCH_MODE=GROUP");
+#if 1
+// #if defined(CUDA_MEMORY_POOL_DISABLED)
+//         FT_LOG_WARNING(
+//             "Async cudaMalloc/Free is not supported before CUDA 11.2. Using Sync cudaMalloc/Free."
+//             "Note this may lead to hang with NCCL kernels launched in parallel; if so, try NCCL_LAUNCH_MODE=GROUP");
 #else
         int device_count = 1;
         check_cuda_error(cudaGetDeviceCount(&device_count));
@@ -214,8 +215,9 @@ public:
             check_cuda_error(cudaMallocHost(&ptr, (size_t)(ceil(size / 32.)) * 32));
         }
         else {
-#if defined(CUDA_MEMORY_POOL_DISABLED)
-            check_cuda_error(cudaMalloc(&ptr, (size_t)(ceil(size / 32.)) * 32));
+// #if defined(CUDA_MEMORY_POOL_DISABLED)
+//             check_cuda_error(cudaMalloc(&ptr, (size_t)(ceil(size / 32.)) * 32));
+#if 1
 #else
             check_cuda_error(cudaMallocAsync(&ptr, (size_t)(ceil(size / 32.)) * 32, stream_));
 #endif
@@ -244,8 +246,9 @@ public:
                     check_cuda_error(cudaFreeHost(*ptr));
                 }
                 else {
-#if defined(CUDA_MEMORY_POOL_DISABLED)
-                    check_cuda_error(cudaFree(*ptr));
+// #if defined(CUDA_MEMORY_POOL_DISABLED)
+//                     check_cuda_error(cudaFree(*ptr));
+#if 1   
 #else
                     check_cuda_error(cudaFreeAsync(*ptr, stream_));
                     cudaStreamSynchronize(stream_);
